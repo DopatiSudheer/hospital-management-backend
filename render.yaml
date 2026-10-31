@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: hospital-management-backend
+    env: java
+    buildCommand: mvn clean package -DskipTests
+    startCommand: java -jar target/hospital-management-1.0.0.jar
+    envVars:
+      - key: SERVER_PORT
+        value: 8080
+      - key: DATABASE_URL
+        sync: false
+      - key: DATABASE_USERNAME
+        sync: false
+      - key: DATABASE_PASSWORD
+        sync: false
+      - key: JPA_DDL_AUTO
+        value: update
+      - key: JPA_SHOW_SQL
+        value: false
+      - key: ADMIN_EMAIL
+        value: admin@hospital.com
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: ADMIN_NAME
+        value: System Administrator
