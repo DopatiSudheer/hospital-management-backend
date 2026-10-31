@@ -39,8 +39,7 @@ public class PatientServiceImpl implements PatientService {
             User existingUser = optionalUser.get();
 
             // Check if patient already linked
-            Optional<Patient> existingPatient =
-                    patientRepository.findByUserId(existingUser.getId());
+            Optional<Patient> existingPatient = patientRepository.findByUserId(existingUser.getId());
 
             if (existingPatient.isPresent()) {
                 throw new RuntimeException("Profile already completed.");
@@ -67,19 +66,20 @@ public class PatientServiceImpl implements PatientService {
             throw new RuntimeException("Contact number must be at least 4 digits.");
         }
 
-        String lastFourDigits =
-                contactNumber.substring(contactNumber.length() - 4);
+        String lastFourDigits = contactNumber.substring(contactNumber.length() - 4);
 
-        String defaultPassword =
-                patient.getPatientName() + "@" + lastFourDigits;
+        // Remove title prefixes (Mr., Ms., Mrs., etc.) from name
+        String cleanName = patient.getPatientName().trim()
+                .replaceAll("^(Dr\\.?|Mr\\.?|Ms\\.?|Mrs\\.?)\\s*", "");
+
+        String defaultPassword = cleanName + "@" + lastFourDigits;
 
         // Create new user
         User newUser = new User(
                 patient.getPatientName(),
                 email,
                 defaultPassword,
-                "PATIENT"
-        );
+                "PATIENT");
 
         // Force password change on first login
         newUser.setFirstLogin(true);
@@ -116,8 +116,7 @@ public class PatientServiceImpl implements PatientService {
     @Override
     public Patient updatePatient(Long id, Patient patient) {
 
-        Patient existingPatient =
-                patientRepository.findByIdAndActiveTrue(id).orElse(null);
+        Patient existingPatient = patientRepository.findByIdAndActiveTrue(id).orElse(null);
 
         if (existingPatient == null) {
             return null;
@@ -139,8 +138,7 @@ public class PatientServiceImpl implements PatientService {
     @Override
     public void deletePatient(Long id) {
 
-        Patient patient =
-                patientRepository.findByIdAndActiveTrue(id).orElse(null);
+        Patient patient = patientRepository.findByIdAndActiveTrue(id).orElse(null);
 
         if (patient != null) {
             patient.setActive(false);

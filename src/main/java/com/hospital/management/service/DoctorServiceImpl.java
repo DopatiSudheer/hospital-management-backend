@@ -31,15 +31,19 @@ public class DoctorServiceImpl implements DoctorService {
         // 2️⃣ Generate default password: name@last4digits
         String contactNumber = doctor.getContactNumber();
         String lastFourDigits = contactNumber.substring(contactNumber.length() - 4);
-        String defaultPassword = doctor.getDoctorName().trim() + "@" + lastFourDigits;
+
+        // Remove title prefixes (Dr., Mr., Ms., etc.) from name
+        String cleanName = doctor.getDoctorName().trim()
+                .replaceAll("^(Dr\\.?|Mr\\.?|Ms\\.?|Mrs\\.?)\\s*", "");
+
+        String defaultPassword = cleanName + "@" + lastFourDigits;
 
         // 3️⃣ Create User
         User user = new User(
                 doctor.getDoctorName().trim(),
                 email,
                 defaultPassword,
-                "DOCTOR"
-        );
+                "DOCTOR");
 
         // 🔥 Force password change on first login
         user.setFirstLogin(true);
